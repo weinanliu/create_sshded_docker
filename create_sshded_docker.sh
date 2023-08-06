@@ -39,4 +39,9 @@ docker pull ${IMAGE_NAME}
 
 docker build -t ${SSHDED_IMAGE} .
 
-docker run -d --name ${DOCKER_NAME} -p ${EXPOSED_PORT}:22 ${SSHDED_IMAGE}
+docker run \
+	 -d \
+	 -v $(pwd):/data \
+	 --name ${DOCKER_NAME} \
+	 -p ${EXPOSED_PORT}:22 \
+	 ${SSHDED_IMAGE}
