@@ -19,6 +19,8 @@ MAINTAINER docker_user (user@docker.com)
 RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list
 RUN apt-get update
 
+RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
+
 #安装ssh服务
 RUN apt-get install -y passwd openssh-server
 RUN mkdir /var/run/sshd
