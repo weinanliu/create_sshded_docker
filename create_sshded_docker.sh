@@ -39,7 +39,7 @@ EOF
 
 docker pull ${IMAGE_NAME}
 
-docker build -t ${SSHDED_IMAGE} .
+docker build --no-cache -t ${SSHDED_IMAGE} .
 
 docker run \
 	 -d \
