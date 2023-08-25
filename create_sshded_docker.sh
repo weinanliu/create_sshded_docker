@@ -16,7 +16,6 @@ EOF
 
 chmod +x get_in_${DOCKER_NAME}.sh
 
-exit
 
 cat > Dockerfile << EOF
 #设置继承镜像
