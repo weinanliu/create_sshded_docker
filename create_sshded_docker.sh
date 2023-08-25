@@ -8,6 +8,16 @@ DOCKER_NAME="lwn_"${IMAGE_NAME//:/_}
 EXPOSED_PORT=10122
 ROOT_PASSWD="root"
 
+cat > get_in_${DOCKER_NAME}.sh << EOF
+#!/bin/sh
+set -x
+sshpass -p ${ROOT_PASSWD} ssh -p ${EXPOSED_PORT} root@127.1
+EOF
+
+chmod +x get_in_${DOCKER_NAME}.sh
+
+exit
+
 cat > Dockerfile << EOF
 #设置继承镜像
 FROM ${IMAGE_NAME}
