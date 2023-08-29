@@ -50,6 +50,9 @@ docker pull ${IMAGE_NAME}
 
 docker build --no-cache -t ${SSHDED_IMAGE} .
 
+# --shm-size=1g这个flag为了支持nccl。nccl库需要很大的共享内存
+# https://github.com/NVIDIA/nccl-tests/issues/143
+
 docker run \
 	 -d \
 	 --shm-size=1g \
