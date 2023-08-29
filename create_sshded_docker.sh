@@ -52,6 +52,7 @@ docker build --no-cache -t ${SSHDED_IMAGE} .
 
 docker run \
 	 -d \
+	 --shm-size=1g \
 	 -v $(pwd):/data \
 	 --name ${DOCKER_NAME} \
 	 -p ${EXPOSED_PORT}:22 \
