@@ -60,6 +60,7 @@ docker run \
 	 --shm-size=1g \
 	 -v $(pwd):/data \
 	 --name ${DOCKER_NAME} \
-  --network host \
+	 --network host \
+	 --hostname "${DOCKER_NAME}_docker" \
 	 -p ${EXPOSED_PORT}:22 \
 	 ${SSHDED_IMAGE}
