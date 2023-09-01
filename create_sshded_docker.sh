@@ -5,7 +5,8 @@ IMAGE_NAME="ubuntu:latest"
 SSHDED_IMAGE="lwn_sshded_"${IMAGE_NAME//:/_}
 
 DOCKER_NAME="lwn_"${IMAGE_NAME//:/_}
-EXPOSED_PORT=10122
+SSH_PORT_IN_CONTAINER=10122
+#EXPOSED_PORT=10122
 ROOT_PASSWD="root"
 
 cat > get_in_${DOCKER_NAME}.sh << EOF
@@ -33,6 +34,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
 #安装ssh服务
 RUN apt-get install -y passwd openssh-server
 RUN mkdir /var/run/sshd
+RUN sed -i 's/^.*Port 22$/Port ${SSH_PORT_IN_CONTAINER}/g' /etc/ssh/sshd_config
 RUN sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
 RUN sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
 
@@ -58,5 +60,6 @@ docker run \
 	 --shm-size=1g \
 	 -v $(pwd):/data \
 	 --name ${DOCKER_NAME} \
+  --network host \
 	 -p ${EXPOSED_PORT}:22 \
 	 ${SSHDED_IMAGE}
