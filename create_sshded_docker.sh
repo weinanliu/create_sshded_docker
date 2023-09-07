@@ -60,6 +60,7 @@ docker rm -f ${DOCKER_NAME}
 # https://github.com/NVIDIA/nccl-tests/issues/143
 docker run \
 	 -d \
+         --runtime=nvidia \
 	 --shm-size=1g \
 	 -v $(pwd):/data \
 	 --name ${DOCKER_NAME} \
