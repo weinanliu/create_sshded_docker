@@ -12,7 +12,8 @@ ROOT_PASSWD="root"
 cat > get_in_${DOCKER_NAME}.sh << EOF
 #!/bin/sh
 set -x
-sshpass -p ${ROOT_PASSWD} ssh -o StrictHostKeyChecking=no -p ${EXPOSED_PORT} root@127.1
+ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "[127.0.0.1]:${SSH_PORT_IN_CONTAINER}"
+sshpass -p ${ROOT_PASSWD} ssh -o StrictHostKeyChecking=no -p ${SSH_PORT_IN_CONTAINER} root@127.1
 EOF
 
 chmod +x get_in_${DOCKER_NAME}.sh
