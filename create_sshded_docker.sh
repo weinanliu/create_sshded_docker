@@ -43,6 +43,8 @@ RUN sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
 RUN sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
 RUN sed -i 's/^.*Port 22$/Port ${SSH_PORT_IN_CONTAINER}/g' /etc/ssh/sshd_config
 
+RUN apt install -y vim
+
 #开放端口
 EXPOSE 22
 #设置自启动命令
