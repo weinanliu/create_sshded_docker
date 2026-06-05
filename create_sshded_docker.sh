@@ -71,7 +71,7 @@ EOF
 
 docker pull ${IMAGE_NAME}
 
-docker build -t ${SSHDED_IMAGE} .
+docker build --network host -t ${SSHDED_IMAGE} .
 
 docker rm -f ${DOCKER_NAME}
 
