@@ -79,7 +79,7 @@ docker rm -f ${DOCKER_NAME}
 # https://github.com/NVIDIA/nccl-tests/issues/143
 docker run \
          -d \
-         -v $(pwd):/data \
+         -v $(pwd):/home/${CUSTOM_USER_NAME} \
          --name ${DOCKER_NAME} \
          --hostname "${DOCKER_NAME}_docker" \
          -p ${SSH_PORT_IN_CONTAINER}:22 \
