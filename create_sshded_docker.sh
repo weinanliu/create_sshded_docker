@@ -21,14 +21,18 @@ EOF
 chmod +x get_in_${DOCKER_NAME}.sh
 
 
+if [ ! -f ~/.ssh/id_ed25519.pub ]; then
+  ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N ""
+fi
+SSH_PUB_KEY=$(cat ~/.ssh/id_ed25519.pub)
+
+
 cat > Dockerfile << EOF
 #设置继承镜像
 FROM ${IMAGE_NAME}
 
-#提供一些作者的信息
-MAINTAINER docker_user (user@docker.com)
+WORKDIR .
 
-#下面开始运行更新命令
 RUN sed -i 's@//.*archive.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list
 RUN sed -i 's@//ports.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/ubuntu.sources
 RUN apt-get update
@@ -63,6 +67,8 @@ ENTRYPOINT /usr/sbin/sshd -D
 
 EOF
 
+
+
 docker pull ${IMAGE_NAME}
 
 docker build -t ${SSHDED_IMAGE} .
@@ -73,11 +79,16 @@ docker rm -f ${DOCKER_NAME}
 # https://github.com/NVIDIA/nccl-tests/issues/143
 docker run \
          -d \
-         -v $(pwd):/home/${CUSTOM_USER_NAME} \
+         -v $(pwd):/data \
          --name ${DOCKER_NAME} \
          --hostname "${DOCKER_NAME}_docker" \
          -p ${SSH_PORT_IN_CONTAINER}:22 \
          ${SSHDED_IMAGE}
+
+docker exec ${DOCKER_NAME} mkdir -p /home/${CUSTOM_USER_NAME}/.ssh
+docker cp ~/.ssh/id_ed25519.pub ${DOCKER_NAME}:/home/${CUSTOM_USER_NAME}/.ssh/authorized_keys
+docker exec ${DOCKER_NAME} chown ${CUSTOM_USER_NAME}:${CUSTOM_USER_NAME} /home/${CUSTOM_USER_NAME}/.ssh/authorized_keys
+
 
          --network host \
          --runtime=nvidia \
