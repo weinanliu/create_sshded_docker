@@ -5,7 +5,6 @@ IMAGE_NAME="ubuntu:24.04"
 SSHDED_IMAGE="lwn_sshded_"${IMAGE_NAME//:/_}
 
 DOCKER_NAME="lwn_"${IMAGE_NAME//:/_}
-DOCKER_NAME="my_ubuntu"
 SSH_PORT_IN_CONTAINER=26211
 ROOT_PASSWD="root"
 
