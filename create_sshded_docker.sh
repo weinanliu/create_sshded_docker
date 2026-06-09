@@ -34,8 +34,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
 RUN apt-get install -y passwd openssh-server
 
 RUN mkdir -p /var/run/sshd
-RUN sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
-RUN sed -i "s/.*PermitRootLogin.*/PermitRootLogin yes/" /etc/ssh/sshd_config
+RUN sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+RUN sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+RUN sed -i 's/^#*ChallengeResponseAuthentication.*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
+RUN sed -i 's/^#*UsePAM.*/UsePAM yes/' /etc/ssh/sshd_config
 
 RUN apt install -y vim git net-tools sudo
 
