@@ -81,7 +81,6 @@ docker run \
          --name ${DOCKER_NAME} \
          --hostname "${DOCKER_NAME}_docker" \
          -p ${SSH_PORT_IN_CONTAINER}:22 \
-         --network to_brlan \
          --shm-size=1g \
          ${SSHDED_IMAGE}
 
