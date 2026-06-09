@@ -1,24 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 set -x
 
 IMAGE_NAME="ubuntu:24.04"
 SSHDED_IMAGE="lwn_sshded_"${IMAGE_NAME//:/_}
 
 DOCKER_NAME="lwn_"${IMAGE_NAME//:/_}
+DOCKER_NAME="my_ubuntu"
 SSH_PORT_IN_CONTAINER=26211
 ROOT_PASSWD="root"
 
 CUSTOM_USER_NAME="lwn"
 
-
-cat > get_in_${DOCKER_NAME}.sh << EOF
-#!/bin/sh
-set -x
-ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "[127.0.0.1]:${SSH_PORT_IN_CONTAINER}"
-sshpass -p ${ROOT_PASSWD} ssh -o StrictHostKeyChecking=no -p ${SSH_PORT_IN_CONTAINER} ${CUSTOM_USER_NAME}@127.1
-EOF
-
-chmod +x get_in_${DOCKER_NAME}.sh
 
 
 if [ ! -f ~/.ssh/id_ed25519.pub ]; then
@@ -59,15 +51,19 @@ RUN mkdir -p /etc/sudoers.d
 RUN echo "${CUSTOM_USER_NAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${CUSTOM_USER_NAME}
 RUN chmod 0440 /etc/sudoers.d/${CUSTOM_USER_NAME}
 
+RUN apt install python3
+COPY systemctl3.py /usr/bin/systemctl
+RUN chmod a+x /usr/bin/systemctl
+
 
 #开放端口
 EXPOSE 22
 #设置自启动命令
-ENTRYPOINT /usr/sbin/sshd -D
+ENTRYPOINT /usr/bin/systemctl -1
 
 EOF
 
-
+wget https://raw.githubusercontent.com/gdraheim/docker-systemctl-replacement/refs/heads/v1.7/files/docker/systemctl3.py
 
 docker pull ${IMAGE_NAME}
 
@@ -79,17 +75,16 @@ docker rm -f ${DOCKER_NAME}
 # https://github.com/NVIDIA/nccl-tests/issues/143
 docker run \
          -d \
-         -v $(pwd):/home/${CUSTOM_USER_NAME} \
+         --restart=always \
+         -v $(pwd):/home/${CUSTOM_USER_NAME}:rw \
          --name ${DOCKER_NAME} \
          --hostname "${DOCKER_NAME}_docker" \
          -p ${SSH_PORT_IN_CONTAINER}:22 \
+         --network to_brlan \
+         --shm-size=1g \
          ${SSHDED_IMAGE}
 
 docker exec ${DOCKER_NAME} mkdir -p /home/${CUSTOM_USER_NAME}/.ssh
 docker cp ~/.ssh/id_ed25519.pub ${DOCKER_NAME}:/home/${CUSTOM_USER_NAME}/.ssh/authorized_keys
 docker exec ${DOCKER_NAME} chown ${CUSTOM_USER_NAME}:${CUSTOM_USER_NAME} /home/${CUSTOM_USER_NAME}/.ssh/authorized_keys
 
-
-         --network host \
-         --runtime=nvidia \
-         --shm-size=1g \
